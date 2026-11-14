@@ -14,7 +14,7 @@
   - **Embedding model**: `sentence-transformers/all-MiniLM-L6-v2` (Provider: HuggingFace / Local `sentence-transformers>=3.0.0`, PyTorch CPU, số chiều: **384**, chuẩn hóa vector `normalize_embeddings=True`, dùng cùng cách mã hóa cho cả document và query).
   - **Vector store**: **PostgreSQL 16 + `pgvector`** (Docker image `pgvector/pgvector:pg16`, thư viện `psycopg[binary]>=3.1.0`, `pgvector>=0.3.0`), lưu bền vững trong bảng `rag_chunks` (cột `embedding vector(384)` và `metadata JSONB`).
   - **Metric & Chế độ tìm kiếm**: **Cosine similarity** (`1 - (embedding <=> query_vec)`), tìm kiếm **Exact Nearest Neighbor (exact search)** kết hợp lọc SQL `WHERE metadata->>'section' = ...` (cho Strategy C).
-  - **Lệnh chạy**: `cd starter && python -m src.setup_check && python -m src.run`
+  - **Lệnh chạy**: `cd starter && python scripts/check_setup.py && python -m src.run`
   - **Chi phí**: **$0.00 USD** cho cả 3 chiến lược (chạy hoàn toàn local).
 - **Metadata bắt buộc, trường lọc bổ sung, nguồn giá trị và lý do chọn**:
   - **Metadata bắt buộc**: `doc_id` (`"art-of-war-1910"`), `page` (số nguyên từ `4` đến `65`, trích xuất trực tiếp từ thứ tự trang vật lý PDF), `title` (`"Sun Tzu on the Art of War"`), `source_type` (`"pdf"`).
