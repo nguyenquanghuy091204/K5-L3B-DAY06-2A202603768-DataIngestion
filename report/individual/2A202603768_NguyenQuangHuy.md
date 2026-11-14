@@ -1,0 +1,74 @@
+# Báo cáo cá nhân — Day 6
+
+- **Họ và tên**: Nguyễn Quang Huy · **MSSV**: `2A202603768` · **Lớp**: `L3B`
+
+## Dữ liệu và pipeline
+- **Chủ đề, nguồn/quyền, số trang và quy tắc tính trang**:
+  - **Chủ đề**: Lý thuyết và chiến lược quân sự cổ đại (*Sun Tzu on the Art of War*, bản dịch tiếng Anh của Lionel Giles, 1910; ấn bản điện tử Allandale Online Publishing, 2000, ISBN `1-903328-03-9`).
+  - **Nguồn/quyền**: Lưu tại [data/art_of_war.pdf](../../data/art_of_war.pdf), khai báo chi tiết tại [data/manifest.json](../../data/manifest.json). Bản dịch năm 1910 thuộc phạm vi công cộng (*Public Domain*), được phép tái phân phối và sử dụng tự do cho mục đích học thuật.
+  - **Số trang và quy tắc tính trang**: Tổng số trang vật lý của PDF là **66 trang** (từ trang 1 đến trang 66). Loại bỏ **4 trang (6.06%)** không chứa nội dung học thuật gồm: Trang 1 (bìa và thông tin xuất bản), Trang 2 (trang trống), Trang 3 (mục lục *Contents*) và Trang 66 (trang trống cuối sách). Tổng số trang nội dung hợp lệ đưa vào pipeline là **62 trang** (từ trang 4 đến trang 65, đạt chuẩn `≥ 30 trang`), tổng cộng **67.784 ký tự** sau chuẩn hóa.
+- **Chuẩn hóa, lỗi và giới hạn**:
+  - **Quy trình chuẩn hóa (`starter/src/ingestion.py`)**: Đọc PDF bằng `pypdf>=4.0.0`, chuẩn hóa Unicode (`NFC`), xóa dòng tiêu đề lặp ở đầu mỗi trang (running header tên sách/tên chương La Mã), xóa số trang ở cuối trang (footer), nối các từ tiếng Anh bị ngắt gạch nối cuối dòng (`-\n`), và gom khoảng trắng/xuống dòng thừa thành khoảng trắng đơn.
+  - **Lỗi và giới hạn**: Văn bản PDF là dạng digital text nên không cần OCR và không có trang lỗi font. Tuy nhiên, việc đọc theo từng trang vật lý có giới hạn là một số câu văn ở cuối trang trước (ví dụ cuối trang 11 sang đầu trang 12) bị ngắt qua ranh giới trang vật lý.
+- **Embedding model/provider/version/số chiều, vector store/version, metric, lệnh chạy và chi phí**:
+  - **Embedding model**: `sentence-transformers/all-MiniLM-L6-v2` (Provider: HuggingFace / Local `sentence-transformers>=3.0.0`, PyTorch CPU, số chiều: **384**, chuẩn hóa vector `normalize_embeddings=True`, dùng cùng cách mã hóa cho cả document và query).
+  - **Vector store**: **PostgreSQL 16 + `pgvector`** (Docker image `pgvector/pgvector:pg16`, thư viện `psycopg[binary]>=3.1.0`, `pgvector>=0.3.0`), lưu bền vững trong bảng `rag_chunks` (cột `embedding vector(384)` và `metadata JSONB`).
+  - **Metric & Chế độ tìm kiếm**: **Cosine similarity** (`1 - (embedding <=> query_vec)`), tìm kiếm **Exact Nearest Neighbor (exact search)** kết hợp lọc SQL `WHERE metadata->>'section' = ...` (cho Strategy C).
+  - **Lệnh chạy**: `cd starter && python -m src.setup_check && python -m src.run`
+  - **Chi phí**: **$0.00 USD** cho cả 3 chiến lược (chạy hoàn toàn local).
+- **Metadata bắt buộc, trường lọc bổ sung, nguồn giá trị và lý do chọn**:
+  - **Metadata bắt buộc**: `doc_id` (`"art-of-war-1910"`), `page` (số nguyên từ `4` đến `65`, trích xuất trực tiếp từ thứ tự trang vật lý PDF), `title` (`"Sun Tzu on the Art of War"`), `source_type` (`"pdf"`).
+  - **Trường lọc bổ sung**: `section` (kiểu chuỗi, tên của 1 trong 13 chương từ `"Laying Plans"` đến `"The Use of Spies"`), cùng `year` (`1910`), `offset_start`, `offset_end`.
+  - **Nguồn giá trị và lý do chọn**: Trường `section` được ánh xạ xác định từ bảng mục lục trang 3 và tiêu đề chương đầu mỗi phần trong PDF gốc (không tự suy đoán). Chọn `section` làm trường lọc vì tác phẩm gồm 13 chương bàn về các khía cạnh gần nhau (địa hình, hành quân, biến hóa, gián điệp); khi người dùng hỏi quy tắc trong một chương cụ thể, lọc theo `section` giúp loại bỏ các điều khoản có từ vựng tương tự nằm ở chương khác.
+
+## Cấu hình và benchmark
+- **A / B / C (tham số cụ thể, khác biệt duy nhất B–C)**:
+  - **Strategy A (Baseline Fixed-size)**: Chia chunk kích thước cố định `size = 450` ký tự, `overlap = 50` ký tự (`chunking.fixed_size`), lưu metadata cơ bản (`doc_id`, `page`), truy xuất top-3 bằng dense cosine similarity **không lọc metadata** (`use_filter = False`).
+  - **Strategy B (Structure-aware Paragraph/Verse)**: Chia chunk theo cấu trúc đoạn/điều khoản đánh số (`1.`, `2.`, `(1)`...) bằng regex ranh giới câu và gom các điều khoản liên tiếp trong trang cho đến ngưỡng `max_size = 600` ký tự, `overlap = 0` (`chunking.by_paragraph`), gắn metadata có `section`, truy xuất top-3 **không lọc metadata** (`use_filter = False`).
+  - **Strategy C (Structure-aware + Metadata Pre-filtering)**: Giữ **nguyên hoàn toàn hàm chunking, tập 158 chunks, văn bản và model embedding của Strategy B**; **khác biệt duy nhất giữa B và C** là khi câu hỏi có trường `filter` (`section`), Strategy C áp dụng bộ lọc SQL `AND metadata->>'section' = %s` trong truy vấn `pgvector` (`use_filter = True`), còn câu không có filter thì chạy giống hệt B.
+- **≥20 câu: phân chia ≥15 dev / ≥5 test, câu metadata filter và cách kiểm chứng evidence**:
+  - Bộ câu hỏi tại [benchmark/benchmark.json](../../benchmark/benchmark.json) gồm **20 câu hỏi** hoàn toàn có đáp án trong nguồn, được khóa phân chia trước khi chạy thực nghiệm thành **15 câu `dev`** (`q01`–`q15`) và **5 câu `test`** (`q16`–`q20`), phủ đều cả 13 chương để tránh rò rỉ dữ liệu.
+  - Bao gồm câu hỏi trực tiếp (`q01`, `q02`, `q16`), câu diễn đạt lại/ẩn dụ (`q05`, `q17`, `q19`), câu điều kiện/ngoại lệ (`q07`, `q08`, `q11`, `q18`) và **4 câu kiểm tra metadata filter** theo trường `section`: **3 câu ở `dev`** (`q13` lọc `"Maneuvering"`, `q14` lọc `"Terrain"`, `q15` lọc `"The Nine Situations"`) và **1 câu ở `test`** (`q20` lọc `"The Use of Spies"`). Giá trị filter là input ngữ cảnh được cung cấp trước khi truy xuất, không chứa đáp án.
+  - **Cách kiểm chứng evidence**: Mọi chuỗi `evidence_quote` và `gold_page` đều được đối chiếu tự động và thủ công trên văn bản trang PDF sau khi qua hàm `clean_text()` để đảm bảo chuỗi bằng chứng tồn tại chính xác tại trang nguồn.
+- **Tiêu chí chọn chiến lược đã chốt trước khi xem test**:
+  - Thứ tự ưu tiên quyết định trên tập `dev`: **(1)** Đạt `Evidence Hit@3` và `Hit@1` trên tập `dev` cao nhất; **(2)** Nếu `Hit@1` và `Evidence Hit@3` ngang nhau, chọn chiến lược có **Chunk Coherence** (trên 10 vị trí cố định) và **Filter Compliance** (trên các câu có filter) cao hơn; **(3)** Số lượng chunk lưu trữ ít hơn (tối ưu tài nguyên).
+
+## Kết quả
+| Strategy | Split | Hit@1 (n/N) | Evidence Hit@3 (n/N) | Chunk count | Thời gian | Chi phí |
+|---|---|---|---|---|---|---|
+| **A** (`fixed_size=450, overlap=50`) | `dev` | 12/15 (80.00%) | 14/15 (93.33%) | 192 | 5.33s | $0.00 |
+| **A** (`fixed_size=450, overlap=50`) | `test` | 5/5 (100.00%) | 5/5 (100.00%) | 192 | 5.33s | $0.00 |
+| **B** (`by_paragraph, max=600`) | `dev` | 12/15 (80.00%) | 14/15 (93.33%) | 158 | 8.18s | $0.00 |
+| **B** (`by_paragraph, max=600`) | `test` | 4/5 (80.00%) | 4/5 (80.00%) | 158 | 8.18s | $0.00 |
+| **C** (`by_paragraph` + `section` filter) | `dev` | 12/15 (80.00%) | 14/15 (93.33%) | 158 | 6.96s | $0.00 |
+| **C** (`by_paragraph` + `section` filter) | `test` | 4/5 (80.00%) | 4/5 (80.00%) | 158 | 6.96s | $0.00 |
+
+| Strategy | Coherence trung bình /2 (n) | Metadata đủ và đúng (n/N) | Filter tuân thủ (n/N hoặc N/A) | Grounding 0/1/2 (số câu) và trung bình /2 |
+|---|---|---|---|---|
+| **A** | **1.10 / 2.00** (`n=10`, tổng 11/20: một điểm 0, bảy điểm 1, hai điểm 2) | **0/15** (chỉ có `doc_id, page`, thiếu trường `section` để lọc chương; riêng `page` đúng 15/15) | Dev: **0/3** (0%)<br>Test: **1/1** (100%)<br>All: **1/4** (25%) | Mức 0: `0` câu · Mức 1: `0` câu · Mức 2: `5` câu<br>Trung bình: **2.00 / 2.00** (10/10) |
+| **B** | **1.90 / 2.00** (`n=10`, tổng 19/20: không có điểm 0, một điểm 1, chín điểm 2) | **15/15 (100%)** (`doc_id, page, section` khớp tuyệt đối PDF gốc trên 15 bản ghi test) | Dev: **0/3** (0%)<br>Test: **1/1** (100%)<br>All: **1/4** (25%) | Mức 0: `0` câu · Mức 1: `1` câu (`q17`) · Mức 2: `4` câu<br>Trung bình: **1.80 / 2.00** (9/10) |
+| **C** | **1.90 / 2.00** (`n=10`, tổng 19/20: không có điểm 0, một điểm 1, chín điểm 2) | **15/15 (100%)** (đầy đủ `doc_id, page, section, title, year, offsets` khớp PDF gốc) | Dev: **3/3 (100%)**<br>Test: **1/1 (100%)**<br>All: **4/4 (100%)** | Mức 0: `0` câu · Mức 1: `1` câu (`q17`) · Mức 2: `4` câu<br>Trung bình: **1.80 / 2.00** (9/10) |
+
+**Đường dẫn trace, nhãn thủ công và cách chọn mẫu**:
+- Thống kê tổng hợp: [results/summary.json](../../results/summary.json) (và [starter/results/summary.json](../../starter/results/summary.json)).
+- Trace top-3 chi tiết: [results/traces_A.json](../../results/traces_A.json), [results/traces_B.json](../../results/traces_B.json), [results/traces_C.json](../../results/traces_C.json).
+- Nhãn chấm thủ công (Coherence, Metadata, Grounding) và log làm sạch: [results/manual_audit.md](../../results/manual_audit.md).
+- Nhật ký cấu hình thí nghiệm: [artifacts/experiment_log.csv](../../artifacts/experiment_log.csv).
+- **Cách chọn mẫu chấm thủ công**: (1) *Chunk Coherence*: Chọn cố định trước khi xem điểm 10 vị trí là chunk đầu tiên (`_000`) của 10 trang nội dung đầu tiên đã sắp xếp (từ Trang 4 đến Trang 13); (2) *Metadata Usefulness*: Kiểm tra toàn bộ 15 bản ghi trả về từ 5 câu `test` (`q16`–`q20` × top-3) đối chiếu với PDF gốc; (3) *Grounding Quality*: Chấm toàn bộ 5 câu tập `test` (`q16`–`q20`) trên từng chiến lược.
+
+## Phân tích và kết luận
+- **So sánh A–B và B–C; 2 ví dụ sai có ID câu và nguồn**:
+  - **So sánh A → B (Tác động của Chunking)**: Chuyển từ `fixed_size(450, 50)` sang `by_paragraph(max_size=600)` giúp giảm **17.7% số lượng chunk** (từ 192 xuống 158 chunks, loại bỏ 6.564 ký tự trùng lặp) và nâng điểm **Chunk Coherence từ 1.10/2 lên 1.90/2**. Ở Strategy A, 8/10 vị trí đầu trang bị cắt ngang câu hoặc cắt giữa từ. Nhờ giữ nguyên ranh giới điều khoản, Strategy B sửa triệt để lỗi đứt danh sách ở câu **`q01`** (từ trượt top-3 ở A thành Hit@1 ở B) và nâng **`q05`** từ hạng 2 lên hạng 1. Đánh đổi lại, việc gộp nhiều điều khoản tới 600 ký tự không có overlap khiến một số chunk dài bị pha loãng ngữ nghĩa (`q06`) hoặc tách hai điều khoản liên tiếp cùng chủ đề ra 2 chunk (`q17`).
+  - **So sánh B → C (Tác động của Metadata Filter)**: Giữ nguyên chunking nên `Hit@1` và `Evidence Hit@3` tổng thể giữ nguyên (`12/15` dev, `4/5` test), nhưng **Filter Compliance trên tập `dev` tăng từ 0/3 (0%) lên 3/3 (100%)**. Ở Strategy B, các câu `q13` (lọc *Maneuvering*), `q14` (lọc *Terrain*) và `q15` (lọc *The Nine Situations*) đều bị lẫn 2/3 kết quả ở Rank 2 và Rank 3 từ các chương khác có từ vựng tương tự. Strategy C khóa phạm vi truy vấn bằng `metadata->>'section'`, đảm bảo cả 3 chunk trong top-3 đều thuộc đúng chương yêu cầu.
+  - **Ví dụ sai 1 — ID `q01` (Tập `dev`, nguồn: `art-of-war-1910`, Trang 4, Chương I *Laying Plans*)**: Hỏi về 5 yếu tố bất biến (*five constant factors*). Ở **Strategy A**, chunk hạng 1 `art-of-war-1910_p004_fixed_000` (score `0.7450`) bị cửa sổ 450 ký tự cắt đứt ngang đúng tại cụm `"4. Th"`, làm toàn bộ danh sách `(1) The Moral Law; (2) Heaven; (3) Earth; (4) The Commander; (5) Method and discipline.` rơi sang chunk `p004_fixed_001` (không lọt vào top-3), dẫn đến `evidence_hit_at_3 = false`. Sang Strategy B và C, chunk `p004_para_000` (475 ký tự) giữ trọn điều 1–4 nên đạt `hit_at_1 = true`.
+  - **Ví dụ sai 2 — ID `q17` (Tập `test`, nguồn: `art-of-war-1910`, Trang 26, Chương VI *Weak Points and Strong*)**: Hỏi về phép so sánh chiến thuật với dòng nước (*tránh chỗ thực, đánh chỗ hư* ở điều 29–30). Ở **Strategy B & C**, trang 26 được tách thành 2 chunk: `p026_para_000` (chứa điều 27–30 có câu `evidence_quote`) và `p026_para_001` (chứa điều 31–33 tiếp tục bàn về dòng nước biến hóa theo địa hình). Vì `p026_para_000` chứa thêm điều 27–28 ở đầu nên vector bị loãng, trong khi `p026_para_001` bàn thuần túy về nước nên được xếp **Rank 1** (score `0.5941` — đúng trang 26 nhưng lệch điều khoản so với `evidence_quote`), làm `evidence_hit_at_3 = false` (chấm thủ công Grounding đạt 1/2 điểm). Ngoài ra, ở tập `dev`, câu **`q06`** (Trang 11, Chương III) cũng bị trượt ở B và C do điều 3 (4 bậc mưu lược) được gộp chung với điều 4–5 (mô tả kỹ thuật đóng xe công thành dài dòng) trong `p011_para_001` (574 ký tự), làm giảm điểm cosine xuống dưới top-3.
+- **Chiến lược chọn, đánh đổi, điều kiện áp dụng**:
+  - **Chiến lược được chọn**: **Strategy C** (`by_paragraph, max_size=600` + Metadata Filter theo `section`). Theo đúng tiêu chí đã chốt trước khi xem test, trên tập `dev`, cả 3 chiến lược có cùng `Hit@1 = 12/15` và `Evidence Hit@3 = 14/15`, nhưng Strategy C vượt trội hoàn toàn về **Chunk Coherence (`1.90/2` so với `1.10/2` của A)**, **Filter Compliance (`3/3 = 100%` trên dev so với `0/3` của A và B)** và tiết kiệm **17.7% số chunk** lưu trữ.
+  - **Đánh đổi & Điều kiện áp dụng**: Đánh đổi của Strategy C là khi tách đoạn không có overlap (`overlap = 0`), nếu một ý niệm kéo dài qua nhiều điều khoản liên tiếp trên cùng trang (như `q17`) hoặc một điều khoản ngắn bị gộp chung với đoạn mô tả dài (như `q06`), điểm tương đồng của chunk chứa câu trích dẫn có thể giảm nhẹ. Chiến lược này phát huy hiệu quả cao nhất trên các tài liệu có cấu trúc phân mục/điều khoản rõ ràng và khi ứng dụng cần lọc chính xác theo phạm vi chương/mục (tránh nhiễu liên chương). Với quy mô test nhỏ (5 câu), không suy rộng kết luận này thành quy luật tổng quát cho mọi loại văn bản phi cấu trúc.
+- **Hạn chế của dữ liệu, nhãn, test nhỏ, đo thời gian/chi phí**:
+  - **Hạn chế của dữ liệu & chuẩn hóa**: Tách trang vật lý độc lập trong `ingestion.py` khiến một số câu vắt qua ranh giới hai trang (ví dụ cuối trang 11 sang đầu trang 12) chưa được nối liền trước khi chunking.
+  - **Hạn chế của nhãn & người chấm**: Bộ chấm tự động dùng phép kiểm tra chuỗi con chính xác (`quote in chunk_text`), nên trường hợp chunk trả về đúng trang và đúng chủ đề nhưng nằm ở điều khoản kế cận (`q17`) bị tính là `false`. Nhãn thủ công (Coherence, Grounding) do chính tác giả thực hiện nên vẫn có nguy cơ thiên lệch chủ quan dù đã cố định vị trí lấy mẫu trước khi xem điểm.
+  - **Hạn chế của tập test nhỏ & đo thời gian**: Tập `test` chỉ gồm 5 câu (mỗi câu tương đương `20%`), nên chênh lệch 1 câu (`5/5` so với `4/5`) nằm trong biên độ dao động của mẫu nhỏ. Thời gian ingest (`5.33s` – `8.18s`) đo trên máy cá nhân chạy CPU nên chịu ảnh hưởng nhẹ bởi tiến trình nền, và chi phí `$0.00` của model local chưa phản ánh chi phí hạ tầng nếu triển khai cloud quy mô lớn.
+- **Nếu làm lại hoặc mở rộng, cải tiến gì?**
+  1. **Bổ sung Verse-level Overlap (chồng lấp 1 điều khoản giữa hai chunk liên tiếp)** và **nối văn bản xuyên trang thuộc cùng một chương** trước khi chia đoạn: Giữ nguyên ưu điểm Coherence `1.90/2` của Strategy C nhưng khắc phục triệt để ca lỗi `q17` (điều 29–30 và 31–33 luôn có mặt cùng nhau) và lỗi ngắt câu đầu trang 12.
+  2. **Kết hợp Hybrid Retrieval (BM25 + Dense Embedding) hoặc Cross-Encoder Reranker**: Bổ sung điểm khớp từ khóa BM25 để những câu hỏi truy vấn thuật ngữ/danh sách cụ thể như `q06` (*"four forms of generalship"*) không bị chìm khi nằm trong chunk dài.

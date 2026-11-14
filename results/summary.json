@@ -1,0 +1,116 @@
+{
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dimensions": 384,
+  "stats": {
+    "A": {
+      "chunk_count": 192,
+      "avg_chunk_chars": 387.2,
+      "total_chars": 74348,
+      "ingest_seconds": 5.33,
+      "cost_usd": 0.0
+    },
+    "B": {
+      "chunk_count": 158,
+      "avg_chunk_chars": 429.0,
+      "total_chars": 67784,
+      "ingest_seconds": 8.18,
+      "cost_usd": 0.0
+    },
+    "C": {
+      "chunk_count": 158,
+      "avg_chunk_chars": 429.0,
+      "total_chars": 67784,
+      "ingest_seconds": 6.96,
+      "cost_usd": 0.0
+    }
+  },
+  "summary": {
+    "A": {
+      "dev": {
+        "count": 15,
+        "hit_at_1_num": 12,
+        "hit_at_1": "12/15",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 14,
+        "evidence_hit_at_3": "14/15",
+        "evidence_hit_at_3_pct": 93.33
+      },
+      "test": {
+        "count": 5,
+        "hit_at_1_num": 5,
+        "hit_at_1": "5/5",
+        "hit_at_1_pct": 100.0,
+        "evidence_hit_at_3_num": 5,
+        "evidence_hit_at_3": "5/5",
+        "evidence_hit_at_3_pct": 100.0
+      },
+      "all": {
+        "count": 20,
+        "hit_at_1_num": 17,
+        "hit_at_1": "17/20",
+        "hit_at_1_pct": 85.0,
+        "evidence_hit_at_3_num": 19,
+        "evidence_hit_at_3": "19/20",
+        "evidence_hit_at_3_pct": 95.0
+      }
+    },
+    "B": {
+      "dev": {
+        "count": 15,
+        "hit_at_1_num": 12,
+        "hit_at_1": "12/15",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 14,
+        "evidence_hit_at_3": "14/15",
+        "evidence_hit_at_3_pct": 93.33
+      },
+      "test": {
+        "count": 5,
+        "hit_at_1_num": 4,
+        "hit_at_1": "4/5",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 4,
+        "evidence_hit_at_3": "4/5",
+        "evidence_hit_at_3_pct": 80.0
+      },
+      "all": {
+        "count": 20,
+        "hit_at_1_num": 16,
+        "hit_at_1": "16/20",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 18,
+        "evidence_hit_at_3": "18/20",
+        "evidence_hit_at_3_pct": 90.0
+      }
+    },
+    "C": {
+      "dev": {
+        "count": 15,
+        "hit_at_1_num": 12,
+        "hit_at_1": "12/15",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 14,
+        "evidence_hit_at_3": "14/15",
+        "evidence_hit_at_3_pct": 93.33
+      },
+      "test": {
+        "count": 5,
+        "hit_at_1_num": 4,
+        "hit_at_1": "4/5",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 4,
+        "evidence_hit_at_3": "4/5",
+        "evidence_hit_at_3_pct": 80.0
+      },
+      "all": {
+        "count": 20,
+        "hit_at_1_num": 16,
+        "hit_at_1": "16/20",
+        "hit_at_1_pct": 80.0,
+        "evidence_hit_at_3_num": 18,
+        "evidence_hit_at_3": "18/20",
+        "evidence_hit_at_3_pct": 90.0
+      }
+    }
+  }
+}

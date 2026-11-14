@@ -1,0 +1,50 @@
+{
+  "corpus_name": "Sun Tzu on the Art of War - English Translation Corpus",
+  "created_at": "2026-11-14",
+  "page_counting_rule": "Only count physical PDF pages containing main treatise text (Chapters I through XIII, physical pages 4 to 65, corresponding to book pages 1 to 62). Exclude front cover (page 1), title/copyright/public domain notice (page 2), table of contents (page 3), and publisher back cover advertisement (page 66).",
+  "total_physical_pages": 66,
+  "total_valid_content_pages": 62,
+  "minimum_required_pages": 30,
+  "documents": [
+    {
+      "source_id": "art-of-war-1910",
+      "title": "Sun Tzu on the Art of War: The Oldest Military Treatise in the World (Translated by Lionel Giles, M.A., 1910)",
+      "source_path_or_url": "starter/data/art_of_war.pdf",
+      "publisher": "Allandale Online Publishing (Classic Etexts Series, ISBN 1-903328-03-9, Published 2000)",
+      "license_or_permission": "Public Domain (1910 translation out of copyright; explicitly marked on PDF page 2 as 'available in the Public Domain, all of which are out of copyright... freely distributable with no payment required')",
+      "accessed_at": "2026-11-14",
+      "language": "en",
+      "year": 1910,
+      "edition_year": 2000,
+      "physical_pages_total": 66,
+      "valid_page_range": [4, 65],
+      "valid_page_ids": [
+        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+        24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+        43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+        62, 63, 64, 65
+      ],
+      "excluded_pages": [
+        {"page": 1, "reason": "Front cover page"},
+        {"page": 2, "reason": "Title page, copyright & Public Domain notice"},
+        {"page": 3, "reason": "Table of Contents"},
+        {"page": 66, "reason": "Back cover publisher promotional page"}
+      ],
+      "chapters": [
+        {"chapter_id": "I", "section": "Laying Plans", "category": "strategy_planning", "start_page": 4, "end_page": 7},
+        {"chapter_id": "II", "section": "Waging War", "category": "strategy_planning", "start_page": 8, "end_page": 10},
+        {"chapter_id": "III", "section": "Attack by Stratagem", "category": "strategy_planning", "start_page": 11, "end_page": 14},
+        {"chapter_id": "IV", "section": "Tactical Dispositions", "category": "tactics_combat", "start_page": 15, "end_page": 17},
+        {"chapter_id": "V", "section": "Energy", "category": "tactics_combat", "start_page": 18, "end_page": 21},
+        {"chapter_id": "VI", "section": "Weak Points and Strong", "category": "tactics_combat", "start_page": 22, "end_page": 27},
+        {"chapter_id": "VII", "section": "Maneuvering", "category": "terrain_maneuver", "start_page": 28, "end_page": 32},
+        {"chapter_id": "VIII", "section": "Variation in Tactics", "category": "terrain_maneuver", "start_page": 33, "end_page": 35},
+        {"chapter_id": "IX", "section": "The Army on the March", "category": "terrain_maneuver", "start_page": 36, "end_page": 42},
+        {"chapter_id": "X", "section": "Terrain", "category": "terrain_maneuver", "start_page": 43, "end_page": 48},
+        {"chapter_id": "XI", "section": "The Nine Situations", "category": "terrain_maneuver", "start_page": 49, "end_page": 58},
+        {"chapter_id": "XII", "section": "The Attack by Fire", "category": "special_operations", "start_page": 59, "end_page": 61},
+        {"chapter_id": "XIII", "section": "The Use of Spies", "category": "special_operations", "start_page": 62, "end_page": 65}
+      ]
+    }
+  ]
+}

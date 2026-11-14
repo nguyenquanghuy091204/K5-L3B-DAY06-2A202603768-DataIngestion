@@ -1,0 +1,243 @@
+{
+    "benchmark_name": "Sun Tzu Art of War Retrieval Benchmark",
+    "created_at": "2026-11-14",
+    "selection_criteria_locked_before_test": "Select the winning strategy on the dev split (15 questions) by prioritizing: (1) highest Evidence Hit@3 on dev, (2) highest Hit@1 on dev as tie-breaker, (3) higher manual chunk coherence and grounding quality, and (4) resource efficiency (chunk count and ingestion latency). Test split (5 questions) is strictly held out and evaluated only once after strategy parameters are frozen.",
+    "split_summary": {
+        "total_questions": 20,
+        "dev_count": 15,
+        "test_count": 5,
+        "filter_questions_total": 4,
+        "filter_questions_dev": 3,
+        "filter_questions_test": 1
+    },
+    "questions": [
+        {
+            "id": "q01",
+            "split": "dev",
+            "type": "direct",
+            "question": "What are the five constant factors that govern the art of war?",
+            "expected_answer": "The five constant factors are: (1) The Moral Law; (2) Heaven; (3) Earth; (4) The Commander; (5) Method and discipline.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 4,
+            "evidence_quote": "(1) The Moral Law;\n(2) Heaven;\n(3) Earth;\n(4) The Commander;\n(5) Method and discipline.",
+            "filter": null
+        },
+        {
+            "id": "q02",
+            "split": "dev",
+            "type": "direct",
+            "question": "What virtues does the Commander stand for?",
+            "expected_answer": "Wisdom, sincerity (sincerely), benevolence, courage, and strictness.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 5,
+            "evidence_quote": "The Commander stands for the virtues of wisdom, sincerely, benevolence, courage and strictness.",
+            "filter": null
+        },
+        {
+            "id": "q03",
+            "split": "dev",
+            "type": "paraphrase",
+            "question": "How much does it cost per day in silver to raise and maintain an army of 100,000 soldiers?",
+            "expected_answer": "One thousand ounces of silver per day.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 8,
+            "evidence_quote": "the total of a thousand ounces of silver per day. Such is the cost of raising an army of 100,000 men.",
+            "filter": null
+        },
+        {
+            "id": "q04",
+            "split": "dev",
+            "type": "paraphrase",
+            "question": "How does one cartload of captured enemy provisions compare to supplies brought from one's own home store?",
+            "expected_answer": "One cartload of the enemy's provisions is equivalent to twenty of one's own.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 10,
+            "evidence_quote": "One cartload of the enemy's provisions is equivalent to twenty of one's own",
+            "filter": null
+        },
+        {
+            "id": "q05",
+            "split": "dev",
+            "type": "direct",
+            "question": "What does supreme excellence consist in, rather than fighting and conquering in all your battles?",
+            "expected_answer": "Supreme excellence consists in breaking the enemy's resistance without fighting.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 11,
+            "evidence_quote": "supreme excellence consists in breaking the enemy's resistance without fighting.",
+            "filter": null
+        },
+        {
+            "id": "q06",
+            "split": "dev",
+            "type": "conditional",
+            "question": "In what order of priority are the four forms of generalship ranked, from highest to worst policy?",
+            "expected_answer": "Highest is to balk the enemy's plans; next best is to prevent the junction of the enemy's forces; next is to attack the enemy's army in the field; and the worst policy of all is to besiege walled cities.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 11,
+            "evidence_quote": "Thus the highest form of generalship is to balk the enemy's plans; the next best is to prevent the junction of the enemy's forces; the next in order is to attack the enemy's army in the field; and the worst policy of all is to besiege walled cities.",
+            "filter": null
+        },
+        {
+            "id": "q07",
+            "split": "dev",
+            "type": "conditional",
+            "question": "What happens in battle depending on whether you know the enemy and know yourself?",
+            "expected_answer": "If you know the enemy and know yourself, you need not fear the result of a hundred battles. If you know yourself but not the enemy, for every victory gained you will also suffer a defeat. If you know neither, you will succumb in every battle.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 14,
+            "evidence_quote": "If you know the enemy and know yourself, you need not fear the result of a hundred battles. If you know yourself but not the enemy, for every victory gained you will also suffer a defeat.",
+            "filter": null
+        },
+        {
+            "id": "q08",
+            "split": "dev",
+            "type": "paraphrase",
+            "question": "What do standing on the defensive versus attacking indicate about an army's strength?",
+            "expected_answer": "Standing on the defensive indicates insufficient strength; attacking indicates a superabundance of strength.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 15,
+            "evidence_quote": "Standing on the defensive indicates insufficient strength; attacking, a superabundance of strength.",
+            "filter": null
+        },
+        {
+            "id": "q09",
+            "split": "dev",
+            "type": "direct",
+            "question": "How are energy and decision compared to a crossbow?",
+            "expected_answer": "Energy is likened to the bending of a crossbow, and decision to the releasing of a trigger.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 20,
+            "evidence_quote": "Energy may be likened to the bending of a crossbow; decision, to the releasing of a trigger.",
+            "filter": null
+        },
+        {
+            "id": "q10",
+            "split": "dev",
+            "type": "conditional",
+            "question": "If you force your army to march fifty LI to outmaneuver the enemy, what will be the consequence?",
+            "expected_answer": "You will lose the leader of your first division, and only half your force will reach the goal.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 29,
+            "evidence_quote": "If you march fifty LI in order to outmaneuver the enemy, you will lose the leader of your first division, and only half your force will reach the goal.",
+            "filter": null
+        },
+        {
+            "id": "q11",
+            "split": "dev",
+            "type": "conditional",
+            "question": "When an invading force is crossing a river in its onward march, how should you respond instead of meeting it in mid-stream?",
+            "expected_answer": "Do not advance to meet it in mid-stream; let half the army get across and then deliver your attack.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 36,
+            "evidence_quote": "When an invading force crosses a river in its onward march, do not advance to meet it in mid-stream. It will be best to let half the army get across, and then deliver your attack.",
+            "filter": null
+        },
+        {
+            "id": "q12",
+            "split": "dev",
+            "type": "direct",
+            "question": "What are the five ways of attacking with fire?",
+            "expected_answer": "First, to burn soldiers in their camp; second, to burn stores; third, to burn baggage trains; fourth, to burn arsenals and magazines; fifth, to hurl dropping fire amongst the enemy.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 59,
+            "evidence_quote": "The first is to burn soldiers in their camp; the second is to burn stores; the third is to burn baggage trains; the fourth is to burn arsenals and magazines; the fifth is to hurl dropping fire amongst the enemy.",
+            "filter": null
+        },
+        {
+            "id": "q13",
+            "split": "dev",
+            "type": "metadata_filter",
+            "question": "In the chapter 'Maneuvering', why does the general Receive commands from the sovereign and what must he do before pitching his camp?",
+            "expected_answer": "Having collected an army and concentrated his forces, he must blend and harmonize the different elements thereof before pitching his camp.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 28,
+            "evidence_quote": "Having collected an army and concentrated his forces, he must blend and harmonize the different elements thereof before pitching his camp.",
+            "filter": {
+                "section": "Maneuvering"
+            }
+        },
+        {
+            "id": "q14",
+            "split": "dev",
+            "type": "metadata_filter",
+            "question": "According to the chapter 'Terrain', what happens when common soldiers are too strong and officers too weak, versus when officers are too strong and common soldiers too weak?",
+            "expected_answer": "When common soldiers are too strong and officers too weak, the result is insubordination. When officers are too strong and common soldiers too weak, the result is collapse.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 45,
+            "evidence_quote": "When the common soldiers are too strong and their officers too weak, the result is insubordination. When the officers are too strong and the common soldiers too weak, the result is collapse.",
+            "filter": {
+                "section": "Terrain"
+            }
+        },
+        {
+            "id": "q15",
+            "split": "dev",
+            "type": "metadata_filter",
+            "question": "Specifically within the chapter 'The Nine Situations', what are the nine varieties of ground recognized by the art of war?",
+            "expected_answer": "(1) Dispersive ground; (2) facile ground; (3) contentious ground; (4) open ground; (5) ground of intersecting highways; (6) serious ground; (7) difficult ground; (8) hemmed-in ground; (9) desperate ground.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 49,
+            "evidence_quote": "(1) Dispersive ground;\n(2) facile ground;\n(3) contentious ground;\n(4) open ground;\n(5) ground of intersecting highways;\n(6) serious ground;\n(7) difficult ground;\n(8) hemmed-in ground;\n(9) desperate ground.",
+            "filter": {
+                "section": "The Nine Situations"
+            }
+        },
+        {
+            "id": "q16",
+            "split": "test",
+            "type": "direct",
+            "question": "What are the three ways in which a ruler can bring misfortune upon his army?",
+            "expected_answer": "(1) Commanding the army to advance or retreat, being ignorant of the fact that it cannot obey (hobbling the army); (2) Attempting to govern an army in the same way as he administers a kingdom; (3) Employing the officers of his army without discrimination.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 13,
+            "evidence_quote": "12. There are three ways in which a ruler can bring misfortune upon his army:—",
+            "filter": null
+        },
+        {
+            "id": "q17",
+            "split": "test",
+            "type": "paraphrase",
+            "question": "How are military tactics similar to the natural flow of water?",
+            "expected_answer": "Water in its natural course runs away from high places and hastens downwards; so in war, the way is to avoid what is strong and to strike at what is weak, shaping its course according to the nature of the ground and the foe.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 26,
+            "evidence_quote": "Military tactics are like unto water; for water in its natural course runs away from high places and hastens downwards.",
+            "filter": null
+        },
+        {
+            "id": "q18",
+            "split": "test",
+            "type": "conditional",
+            "question": "What do high columns of dust, low wide-spread dust, and branching dust each indicate about enemy movements?",
+            "expected_answer": "Dust rising in a high column indicates chariots advancing; low dust spread over a wide area betokens infantry approaching; dust branching out in different directions shows parties have been sent to collect firewood.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 39,
+            "evidence_quote": "When there is dust rising in a high column, it is the sign of chariots advancing; when the dust is low, but spread over a wide area, it betokens the approach of infantry.",
+            "filter": null
+        },
+        {
+            "id": "q19",
+            "split": "test",
+            "type": "direct",
+            "question": "What is the 'shuai-jan' in the Chung mountains and how does it respond when struck?",
+            "expected_answer": "The shuai-jan is a snake found in the Chung mountains. Strike at its head, and you will be attacked by its tail; strike at its tail, and you will be attacked by its head; strike at its middle, and you will be attacked by head and tail both.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 53,
+            "evidence_quote": "Now the shuai-jan is a snake that is found in the ChUng mountains. Strike at its head, and you will be attacked by its tail; strike at its tail, and you will be attacked by its head; strike at its middle, and you will be attacked by head and tail both.",
+            "filter": null
+        },
+        {
+            "id": "q20",
+            "split": "test",
+            "type": "metadata_filter",
+            "question": "In the chapter 'The Use of Spies', what are the five classes of spies and how are doomed spies defined?",
+            "expected_answer": "The five classes are local spies, inward spies, converted spies, doomed spies, and surviving spies. Doomed spies are those doing certain things openly for purposes of deception and allowing our spies to know of them and report them to the enemy.",
+            "gold_source_id": "art-of-war-1910",
+            "gold_page": 63,
+            "evidence_quote": "(1) Local spies;\n(2) inward spies;\n(3) converted spies;\n(4) doomed spies;\n(5) surviving spies.",
+            "filter": {
+                "section": "The Use of Spies"
+            }
+        }
+    ]
+}

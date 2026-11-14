@@ -1,4 +1,4 @@
 strategy,chunking,chunk_size,overlap,metadata,filter,vectorizer,hypothesis,dev_hit1,dev_hit3,test_hit1,test_hit3,notes
-A,,,,,,,,,,,,
-B,,,,,,,,,,,,
-C,,,,,,,,,,,,
+A,fixed_size,450,50,"doc_id,page",none,sentence-transformers/all-MiniLM-L6-v2 (384d),"Baseline cat co dinh 450 ky tu overlap 50 se de lam dut cau va danh sach liet ke o ranh gioi chunk",12/15 (80.0%),14/15 (93.33%),5/5 (100.0%),5/5 (100.0%),"192 chunks; 5.33s; $0.00; Coherence TB 1.1/2 (11/20); Grounding TB 2.0/2; Bi cat ngang danh sach 5 yeu to o q01 lam truot top-3"
+B,by_paragraph,600,0,"doc_id,page,section",none,sentence-transformers/all-MiniLM-L6-v2 (384d),"Cat theo doan/dieu khoan danh so max_size=600 giup giu tron y va tang Chunk Coherence so voi A",12/15 (80.0%),14/15 (93.33%),4/5 (80.0%),4/5 (80.0%),"158 chunks; 8.18s; $0.00; Coherence TB 1.9/2 (19/20); Grounding TB 1.8/2; Sua duoc q01 va q05 nhung top-3 cau q13-q15 van lan chunk chuong khac (Filter compliance dev 0/3)"
+C,by_paragraph,600,0,"doc_id,page,section,title,source_type,year,offset_start,offset_end",metadata->>'section' exact match when question has filter,sentence-transformers/all-MiniLM-L6-v2 (384d),"Giu nguyen chunking cua B va them SQL pre-filter theo section se loai bo nhieu lien chuong trong top-3",12/15 (80.0%),14/15 (93.33%),4/5 (80.0%),4/5 (80.0%),"158 chunks; 6.96s; $0.00; Coherence TB 1.9/2 (19/20); Grounding TB 1.8/2; Dat 100% Filter Compliance tren top-3 cho ca dev (3/3) va test (1/1)"
